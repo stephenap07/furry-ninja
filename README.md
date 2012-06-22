@@ -16,4 +16,11 @@ The title doesn't necessarily mean anything, it's just a code-name
 *Make 
 
 ##To build
-Just type make 
+For Release: 
+  make config=release
+For Debug: 
+  make config=debug or just make
+
+##Further reading
+sfml linux tutorial : http://www.sfml-dev.org/tutorials/2.0/start-linux.php
+

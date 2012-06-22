@@ -12,4 +12,7 @@
 *.a
 
 # Binaries
-sfml-app
+*sfml-app
+
+# Symlinks
+run
