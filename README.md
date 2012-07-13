@@ -26,6 +26,10 @@ The title doesn't necessarily mean anything, it's just a code-name.
 
 	make config=debug or just make
 
+**Build and run**: 
+  
+  ./build-run 
+
 ##Further reading
 
 sfml linux tutorial : http://www.sfml-dev.org/tutorials/2.0/start-linux.php
