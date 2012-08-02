@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 #include <cassert>
+#include <vector>
 
 // My indludes
 #include "../include/Constants.h"
@@ -29,8 +30,6 @@ sf::SoundBuffer soundShoot;
 sf::Sound PickUpSound;
 
 sf::RenderWindow app;
-
-typedef sf::IntRect frame_t; 
 
 const int CLEAR_TILE = 16;
 int map[MAP_HEIGHT][MAP_WIDTH] = 
@@ -57,116 +56,140 @@ int collisionMap[MAP_HEIGHT][MAP_WIDTH];
 sf::Sprite pallete[PALLETE_MAX]; 
 int numTiles; 
 
+// Animation Typedefs 
+typedef sf::IntRect frame_t; 
+typedef std::vector<frame_t> animation_t; ; 
+
+struct Animation { 
+  Animation(const animation_t & a, float t = 0.05f, int cur_frame=0) 
+  : _anim(a), _time_limit(t), _current_frame(cur_frame), _current_time(0.0f) {}; 
+
+  void setAnimation(const animation_t & a) { 
+    _anim = a; 
+  }
+
+  const frame_t & getNextFrame(float dt) { 
+    _current_time += dt;  
+
+    if(_current_time > _time_limit) { 
+      _current_time = 0.0f; 
+      if(++_current_frame > (_anim.size()-1)) {
+        restart(); 
+      }
+    }
+    
+    return _anim[_current_frame]; 
+  }
+
+  const frame_t & getFrame(int index) { 
+    if( index < _anim.size() ) { 
+      return _anim[index]; 
+    }
+    else { 
+      std::cout << "Programmer error\n"; 
+    }
+  }
+
+  void restart() { 
+    _current_frame = 0; 
+    _current_time = 0.0f; 
+  }
+
+  private: 
+    animation_t _anim;         
+    int _current_frame; 
+    float _current_time; 
+    float _time_limit; 
+};
+
+class AnimationManager { 
+  private: 
+
+    // Variables
+    std::vector<Animation> _animations; 
+    int _current_anim; 
+
+    const frame_t & getNextFrame(int anim, float dt) { 
+      if(_current_anim <= (_animations.size()-1)) {
+        return _animations[_current_anim].getNextFrame(dt); 
+      }
+      else { 
+        std::cout << "programmer error\n"; 
+      }
+    }
+ public: 
+    AnimationManager() :_current_anim(0) { }
+    int pushAnim(const Animation &anim) { 
+      _animations.push_back(anim); 
+      return (_animations.size()-1); 
+    }
+    void setAnim(int anim) { 
+      if( _current_anim != anim ) { 
+        if(_current_anim <= (_animations.size()-1)) {
+          _animations[_current_anim].restart(); 
+        }
+        _current_anim = anim; 
+      }
+    }
+    int getAnim() { 
+      return _current_anim; 
+    }
+    const frame_t & getFrame(int index) { 
+      if(_current_anim < _animations.size()) { 
+        return _animations[_current_anim].getFrame(index); 
+      }
+    }
+    const frame_t & play(int anim, float dt) { 
+      setAnim(anim); 
+      return getNextFrame(anim, dt);
+    }
+
+};
+
 class Entity
 {
 
 private:
 	//animations indexes
-	enum { ANIM_LEFT=0, ANIM_RIGHT, ANIM_JUMP };
+	enum { ANIM_RIGHT=0, ANIM_LEFT,
+         ANIM_IDLE
+       };
+  int _current_direction; 
 
-	int m_currentFrame; //current frame
-	int m_currentAnim;
-	
-	frame_t m_frames [MAX_ANIMS][MAX_FRAMES];
-	float m_nextAnim;
+  AnimationManager _anim_mgr; 
 
 	int m_jumpPosition;
 	bool m_jumpKey;
-	int jumpHeight;
+	int jumpSpeed;;
 	bool m_lockJump; 
 
 	//sounds
 	sf::Sound m_soundJump;
 	sf::Sound m_soundPickUp;
-	sf::Sound m_soundShoot;
-
-	//laser stuff
-	sf::RectangleShape m_lasers[MAX_LASERS];
-
-	int m_lasersDrawn;
-	int m_laserVelX;
-	float m_laserTimer;
-	bool m_canShoot;
 
 private:
 
 	void UpdateAnimations(float dt)
 	{
-		static float timer = 0.0f; 
-		timer += dt;
-
-		if(velX > 0) {
-			m_currentAnim = ANIM_RIGHT;
+		if(_current_direction == ANIM_RIGHT) {
+			sprite.setTextureRect(_anim_mgr.play(ANIM_RIGHT,dt));
 		}
-		else if(velX < 0) {
-			m_currentAnim = ANIM_LEFT;
+		else if(_current_direction == ANIM_LEFT) {
+			sprite.setTextureRect(_anim_mgr.play(ANIM_LEFT,dt));
 		}
-
-		sprite.setTextureRect( m_frames[m_currentAnim][m_currentFrame] );
-
-		if(timer < m_nextAnim) { return; }
-		else timer = 0.0f;
-
-		if(velX != 0) {
-			m_currentFrame++;
-			if(m_currentFrame > 2) m_currentFrame = 0;
-		} 
-		else if(m_currentAnim == ANIM_RIGHT ) m_currentFrame = 0;
-			else m_currentFrame  = 2; 
+    else if(_current_direction == ANIM_IDLE) { 
+      if(_anim_mgr.getAnim() == ANIM_RIGHT) { 
+        sprite.setTextureRect(_anim_mgr.getFrame(0)); 
+      }
+      else {
+        sprite.setTextureRect(_anim_mgr.getFrame(2)); 
+      }
+    }
 	}
 
 	void Jump()
 	{
-		velY = -5;
-	}
-
-	void ShootLaser(float dt)
-	{
-		if(m_lasersDrawn >= MAX_LASERS)
-			return;
-
-		m_soundShoot.play();
-
-		if(m_lasersDrawn > 0)
-			m_lasersDrawn++;
-
-    sf::IntRect rect = sprite.getTextureRect(); 
-    m_lasers[m_lasersDrawn].move(sf::Vector2f(0, rect.height/2 + 3));
-
-		if(m_currentAnim == ANIM_RIGHT) { // going right 
-			m_lasers[m_lasersDrawn].move(sf::Vector2f(rect.width + velX*dt + 3, 0));
-			m_laserVelX = 300;
-		}
-		else if(m_currentAnim == ANIM_LEFT) { //going left
-			m_lasers[m_lasersDrawn].move(sf::Vector2f(velX*dt + 3, 0));
-			m_laserVelX = -300;
-		}
-		else {
-			m_lasers[m_lasersDrawn].move(sf::Vector2f(rect.width + velX*dt + 3, 0));
-			m_laserVelX = 300;
-    }
-
-		if(m_lasersDrawn == 0)
-			m_lasersDrawn++;
-	}
-
-	void UpdateLasers(float dt)
-	{
-		static float timer = 0.0f;
-		timer += dt; 
-
-		for(int i = 0; i < m_lasersDrawn; i++) {
-			m_lasers[i].move(m_laserVelX*dt, 0);
-			if(m_lasers[i].getPosition().x > WINDOW_WIDTH) m_lasersDrawn--; // This will need to change once you have moving views
-			else if(m_lasers[i].getPosition().x < 0) m_lasersDrawn--;
-		}
-
-		//lasers only last 10 seconds until they disappear for now
-		if(timer >= 10.0f) {
-			timer = 0.0f;
-			if(m_lasersDrawn > 0)
-				m_lasersDrawn--;
-		}
+		velY = -jumpSpeed;
 	}
 
 public:
@@ -182,36 +205,32 @@ public:
 
 	//functions
 	
-	Entity() :m_currentFrame(0), m_lockJump(false), velX(0), velY(0),
-            m_currentAnim(ANIM_RIGHT), m_nextAnim(0.2f), nextThink(0.01f), jumpHeight(64), m_jumpPosition(0), m_jumpKey(false),
-            physicsObject(true), inuse(false), m_lasersDrawn(0), m_laserTimer(0.2f), m_canShoot(false)
-	{
-		//set the image
+	Entity() :_current_direction(ANIM_RIGHT), m_lockJump(false), velX(0), velY(0),
+            nextThink(0.01f), jumpSpeed(5), m_jumpPosition(0), m_jumpKey(false),
+            physicsObject(true), inuse(false)	
+  {
+		//set the texture
 		sprite.setTexture(tileset);
 
 		//set up animation frames
-		m_frames[ANIM_RIGHT][0] = frame_t(0, 65, PLAYER_WIDTH, PLAYER_HEIGHT); 
-		m_frames[ANIM_RIGHT][1] = frame_t(PLAYER_WIDTH, 65, PLAYER_WIDTH, PLAYER_HEIGHT);
-		m_frames[ANIM_RIGHT][2] = frame_t(PLAYER_WIDTH*2, 65, PLAYER_WIDTH, PLAYER_HEIGHT);
+		_anim_mgr.pushAnim( Animation( {  frame_t(0, 65, PLAYER_WIDTH, PLAYER_HEIGHT), 
+                                      frame_t(PLAYER_WIDTH, 65, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                      frame_t(PLAYER_WIDTH*2, 65, PLAYER_WIDTH, PLAYER_HEIGHT)
+                                   }, 0.075f )
+                      );
 
-		m_frames[ANIM_LEFT][0] = frame_t(0, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
-		m_frames[ANIM_LEFT][1] = frame_t(PLAYER_WIDTH, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
-		m_frames[ANIM_LEFT][2] = frame_t(PLAYER_WIDTH*2, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
+		_anim_mgr.pushAnim( Animation( {  frame_t(0, 91, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                      frame_t(PLAYER_WIDTH, 91, PLAYER_WIDTH, PLAYER_HEIGHT),
+                                      frame_t(PLAYER_WIDTH*2, 91, PLAYER_WIDTH, PLAYER_HEIGHT)
+                                   }, 0.075 )
+                      );
 
 		//set the current animations and current frame
-		sprite.setTextureRect(m_frames[m_currentAnim][m_currentFrame]); 
+    sprite.setTextureRect(_anim_mgr.play(ANIM_RIGHT,0.0f)); 
 
 		//set up sounds
 		m_soundJump.setBuffer(soundJump);
 		m_soundPickUp.setBuffer(soundPickUp);	
-		m_soundShoot.setBuffer(soundShoot);
-
-		//set up lasers
-		for(int i = 0; i < MAX_LASERS; i++) {
-			m_lasers[i].setSize(sf::Vector2f(5,2));
-      m_lasers[i].setPosition(sf::Vector2f(0,0)); 
-      m_lasers[i].setFillColor(sf::Color::Red); 
-		}
 	}
 
 	void Think(float dt)
@@ -229,37 +248,29 @@ public:
 			m_soundJump.play();
 		}
 
-		static float laserTime = 0.0f;
-		laserTime += dt;
-
-		if(laserTime >= m_laserTimer) {
-			laserTime = 0.0f;
-			m_canShoot = true;
-		}
-
-		//laser shot
-		if( sf::Keyboard::isKeyPressed(sf::Keyboard::X) && m_canShoot) {
-			ShootLaser(dt);
-			m_canShoot = false;
-		}
-
 		if(m_lockJump) { //if we pressed the jump button
 			Jump();
 			m_lockJump = false;
 		}
 
-		UpdateAnimations(dt);
+    if(velX > 0) {
+      _current_direction = ANIM_RIGHT; 
+    }
+    else if(velX < 0) {
+      _current_direction = ANIM_LEFT; 
+		}
+    else { 
+      _current_direction = ANIM_IDLE; 
+    }
 
-		UpdateLasers(dt);
+		UpdateAnimations(dt);
+		
+
 	}
 
 	void Draw()
 	{
 		app.draw(sprite);
-
-		for(int i = 0; i < m_lasersDrawn; i++) {
-			app.draw(m_lasers[i]);
-		}
 	}
 };
 
@@ -446,7 +457,6 @@ void PhysicsDos( float dt, Entity* ply )
   int width = ply->sprite.getTextureRect().height; 
   int height = ply->sprite.getTextureRect().height; 
   float velX = ply->velX; 
-  float velY = ply->velY;
 
 	if( ply->velX > 0 ) { //moving right
 

@@ -16,7 +16,7 @@ const int TILE_TOTAL = 32;
 
 const int PI = 3.14159; 
 
-const float GRAVITY = 10.0f;
+const float GRAVITY = 15.0f;
 
 const int MAX_BACON = 64; 
 const int MAX_LASERS = 64; 
