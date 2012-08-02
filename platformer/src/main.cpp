@@ -12,9 +12,6 @@
 
 //Textures
 sf::Texture tileset;        
-sf::Texture playerTexture;  
-sf::Texture logTexture;
-sf::Texture beaverTexture;
 sf::Texture backgroundTexture;
 sf::Texture treesTexture;
 sf::Image   icon;
@@ -37,26 +34,21 @@ typedef sf::IntRect frame_t;
 
 const int CLEAR_TILE = 16;
 int map[MAP_HEIGHT][MAP_WIDTH] = 
-{ { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 }, 
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 0 , 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 3 , 3 , 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 0 , 3 , 3 , 3 , 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 },
-  { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 }		
+{ { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 0 , 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
+  { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }
 };  
 
 int collisionMap[MAP_HEIGHT][MAP_WIDTH];
@@ -67,6 +59,7 @@ int numTiles;
 
 class Entity
 {
+
 private:
 	//animations indexes
 	enum { ANIM_LEFT=0, ANIM_RIGHT, ANIM_JUMP };
@@ -95,6 +88,8 @@ private:
 	float m_laserTimer;
 	bool m_canShoot;
 
+private:
+
 	void UpdateAnimations(float dt)
 	{
 		static float timer = 0.0f; 
@@ -114,15 +109,15 @@ private:
 
 		if(velX != 0) {
 			m_currentFrame++;
-			if(m_currentFrame > 1) m_currentFrame = 0;
+			if(m_currentFrame > 2) m_currentFrame = 0;
 		} 
 		else if(m_currentAnim == ANIM_RIGHT ) m_currentFrame = 0;
-			else m_currentFrame  = 1; 
+			else m_currentFrame  = 2; 
 	}
 
 	void Jump()
 	{
-		velY = -3;
+		velY = -5;
 	}
 
 	void ShootLaser(float dt)
@@ -192,16 +187,16 @@ public:
             physicsObject(true), inuse(false), m_lasersDrawn(0), m_laserTimer(0.2f), m_canShoot(false)
 	{
 		//set the image
-    sf::Texture texture;
-    texture.loadFromFile("data/abe.png"); 
-		sprite.setTexture(texture);
+		sprite.setTexture(tileset);
 
 		//set up animation frames
-		m_frames[ANIM_LEFT][0] = frame_t(13, 8, PLAYER_WIDTH, PLAYER_HEIGHT); 
-		m_frames[ANIM_LEFT][1] = frame_t(55, 8, PLAYER_WIDTH, PLAYER_HEIGHT);
+		m_frames[ANIM_RIGHT][0] = frame_t(0, 65, PLAYER_WIDTH, PLAYER_HEIGHT); 
+		m_frames[ANIM_RIGHT][1] = frame_t(PLAYER_WIDTH, 65, PLAYER_WIDTH, PLAYER_HEIGHT);
+		m_frames[ANIM_RIGHT][2] = frame_t(PLAYER_WIDTH*2, 65, PLAYER_WIDTH, PLAYER_HEIGHT);
 
-		m_frames[ANIM_RIGHT][0] = frame_t(95, 8, PLAYER_WIDTH, PLAYER_HEIGHT);
-		m_frames[ANIM_RIGHT][1] = frame_t(134, 8, PLAYER_WIDTH, PLAYER_HEIGHT);
+		m_frames[ANIM_LEFT][0] = frame_t(0, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
+		m_frames[ANIM_LEFT][1] = frame_t(PLAYER_WIDTH, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
+		m_frames[ANIM_LEFT][2] = frame_t(PLAYER_WIDTH*2, 91, PLAYER_WIDTH, PLAYER_HEIGHT);
 
 		//set the current animations and current frame
 		sprite.setTextureRect(m_frames[m_currentAnim][m_currentFrame]); 
@@ -243,7 +238,7 @@ public:
 		}
 
 		//laser shot
-		if( sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && m_canShoot) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::X) && m_canShoot) {
 			ShootLaser(dt);
 			m_canShoot = false;
 		}
@@ -266,7 +261,6 @@ public:
 			app.draw(m_lasers[i]);
 		}
 	}
-
 };
 
 class ItemBacon 
@@ -286,7 +280,8 @@ public:
 
 	ItemBacon() :m_limit(0.5f), m_impulse(m_limit), m_rate(2.0f), m_change(false), inuse(false)
 	{
-		sprite.setTexture(logTexture);
+		sprite.setTexture(tileset);
+    sprite.setTextureRect(sf::IntRect(140,58,11,10));
 	}
 
 	void Think(float dt)
@@ -327,7 +322,8 @@ public:
 
 	Enemy () :velX(2), velY(0)
 	{
-		sprite.setTexture(beaverTexture);
+		sprite.setTexture(tileset);
+    sprite.setTextureRect(sf::IntRect(153,58,11,10));
 	}
 
 	void Think(float dt)
@@ -370,7 +366,7 @@ inline bool Collision_Horz_Down(int x, int y, int width, int & tileY)
 	int tileX = tilePixels/TILE_SIZE;
 
 	while( tilePixels <= testEnd) {
-		if( map[tileY][tileX] < 16 )
+		if( map[tileY][tileX] < CLEAR_TILE )
 			return true;
 
 		tileX++;
@@ -390,7 +386,7 @@ inline bool Collision_Horz_Up(int x, int y, int width, int & tileY)
 	int tileX = tilePixels/TILE_SIZE;
 
 	while( tilePixels <= testEnd) {
-		if( map[tileY][tileX] > 16 )
+		if( map[tileY][tileX] < CLEAR_TILE )
 			return true;
 
 		tileX++;
@@ -410,7 +406,7 @@ inline bool Collision_Ver(int x, int y, int height, int & tileX)
 	int tileY = tilePixels/TILE_SIZE;
 
 	while( tilePixels < testEnd) {
-		if(map[tileY][tileX] < 16)
+		if(map[tileY][tileX] < CLEAR_TILE)
 			return true;
 
 		tileY++;
@@ -444,23 +440,30 @@ void PhysicsDos( float dt, Entity* ply )
 	int tileCoord;
 
 	//X AXIS
-	
+
+  float x = ply->sprite.getPosition().x;
+  float y = ply->sprite.getPosition().y; 
+  int width = ply->sprite.getTextureRect().height; 
+  int height = ply->sprite.getTextureRect().height; 
+  float velX = ply->velX; 
+  float velY = ply->velY;
+
 	if( ply->velX > 0 ) { //moving right
 
-		if( Collision_Ver(ply->sprite.getPosition().x + ply->sprite.getTextureRect().width + ply->velX*dt, ply->sprite.getPosition().y, ply->sprite.getTextureRect().height, tileCoord ) ) {
-			ply->sprite.setPosition( sf::Vector2f(tileCoord*TILE_SIZE - ply->sprite.getTextureRect().width, ply->sprite.getPosition().y) );
+		if( Collision_Ver(x + width + velX*dt, y, height, tileCoord ) ) {
+			ply->sprite.setPosition( sf::Vector2f(tileCoord*TILE_SIZE - width, y) );
 		}
 		else
-			ply->sprite.move( ply->velX*dt, 0 );
+			ply->sprite.move( sf::Vector2f(ply->velX*dt, 0) );
 	}
 
 	else if( ply->velX < 0) { //moving left
 
 		if( Collision_Ver( ply->sprite.getPosition().x + ply->velX*dt, ply->sprite.getPosition().y, ply->sprite.getTextureRect().height, tileCoord ) ) { //collision on the left side
-			ply->sprite.setPosition( sf::Vector2f((tileCoord + 1)*TILE_SIZE, ply->sprite.getPosition().y) );	//move to the edge of the tile
+		  ply->sprite.setPosition( sf::Vector2f((tileCoord + 1)*TILE_SIZE, ply->sprite.getPosition().y) );	//move to the edge of the tile
 		}
-
-		else  ply->sprite.move( ply->velX*dt, 0 ); 
+		else 
+      ply->sprite.move( sf::Vector2f(ply->velX*dt, 0) ); 
 	}
 
 	//Y AXIS
@@ -468,33 +471,28 @@ void PhysicsDos( float dt, Entity* ply )
 	if( ply->velY < 0) { //moving up
 
 		ply->grounded = false;
+    ply->sprite.move( 0, ply->velY );
+    Gravity(dt, ply->velY);
 
 		if( Collision_Horz_Up(ply->sprite.getPosition().x, ply->sprite.getPosition().y + ply->velY*dt, ply->sprite.getTextureRect().width, tileCoord ) ) {
-			ply->sprite.setPosition( sf::Vector2f(( tileCoord + 1 ) * TILE_SIZE, ply->sprite.getPosition().y) );
+			ply->sprite.setPosition( sf::Vector2f(ply->sprite.getPosition().x, ( tileCoord + 1 ) * TILE_SIZE) );
+			ply->sprite.move( sf::Vector2f(ply->velX*dt,0) );
 			ply->velY = 0;
-		}
-		
-		else {
-			ply->sprite.move( 0, ply->velY );
-			Gravity(dt, ply->velY);
 		}
 	}
 
 	else { //moving down / on the ground
+    ply->sprite.move( 0, ply->velY );
+    Gravity(dt, ply->velY);
+    ply->grounded = false;
+
+    if(ply->velY >= TILE_SIZE)
+      ply->velY = TILE_SIZE;
 
 		if( Collision_Horz_Down( ply->sprite.getPosition().x, ply->sprite.getPosition().y + ply->sprite.getTextureRect().height + ply->velY*dt, ply->sprite.getTextureRect().width, tileCoord ) ) { //on the ground
-			ply->sprite.setPosition( sf::Vector2f(tileCoord * TILE_SIZE - ply->sprite.getTextureRect().height, ply->sprite.getPosition().y) );
+			ply->sprite.setPosition( sf::Vector2f(ply->sprite.getPosition().x, tileCoord * TILE_SIZE - height) );
 			ply->velY = 0;
 			ply->grounded = true;
-		}
-		else { //falling (in air)
-			ply->sprite.move( 0, ply->velY );
-			Gravity(dt, ply->velY);
-			ply->grounded = false;
-
-			if(ply->velY >= TILE_SIZE)
-				ply->velY = TILE_SIZE;
-
 		}
 	}
 
@@ -561,7 +559,7 @@ void SetTile(int x, int y, int value, int (&_map)[MAP_HEIGHT][MAP_WIDTH])
 void LoadPallete()
 {
 	//load the tileset
-	tileset.loadFromFile("Data/Tileset1.png");
+	tileset.loadFromFile("data/platformer.png");
 
 	int width = tileset.getSize().x/TILE_SIZE; 
 	int height = tileset.getSize().y/TILE_SIZE; 
@@ -592,15 +590,8 @@ inline void Init()
 	quit = false; 
 	
 	//set up images
-	icon.loadFromFile("Data/nope.bmp");
-	app.setIcon(32, 32, icon.getPixelsPtr());
 
 	LoadPallete();
-	playerTexture.loadFromFile("Data/abe.png");
-	logTexture.loadFromFile("Data/log.png");
-	beaverTexture.loadFromFile("Data/beaver.png");
-	backgroundTexture.loadFromFile("Data/blueroundflowers_tile.jpg");
-	treesTexture.loadFromFile("Data/trees.png");
 
 	//set up background
 	background.setTexture(backgroundTexture);
@@ -645,10 +636,10 @@ int main()
 
 	Entity ply; 
 	Enemy enemy;
-	enemy.sprite.setPosition(sf::Vector2f(8*TILE_SIZE, 18*TILE_SIZE));
+	enemy.sprite.setPosition(sf::Vector2f(8*TILE_SIZE, 13*TILE_SIZE));
 	ItemBacon bacon[MAX_BACON];
 	bacon[0].inuse = true;
-	bacon[0].sprite.setPosition(sf::Vector2f(16*TILE_SIZE, 16*TILE_SIZE));
+	bacon[0].sprite.setPosition(sf::Vector2f(16*TILE_SIZE, 13*TILE_SIZE));
 	int numBacons = 0; 
 
 	int currentTile = 0;
@@ -673,7 +664,7 @@ int main()
 			if( event.type == sf::Event::MouseButtonPressed ) {
 
 				if( event.mouseButton.button == sf::Mouse::Left ) {
-          sf::Vector2i mousepos = sf::Mouse::getPosition();
+          sf::Vector2i mousepos = sf::Mouse::getPosition(app);
 					int _x = mousepos.x;
 					int _y = mousepos.y;
 
@@ -683,7 +674,7 @@ int main()
 				}
 
 				if( event.mouseButton.button == sf::Mouse::Right ) {
-          sf::Vector2i mousepos = sf::Mouse::getPosition();
+          sf::Vector2i mousepos = sf::Mouse::getPosition(app);
 					numBacons++;
 
 					if(numBacons >= MAX_BACON) { 
@@ -747,7 +738,7 @@ int main()
 		ply.Draw();
 
 		sf::Vector2i mouse_pos = sf::Mouse::getPosition(app);
-		pallete[currentTile].setPosition( sf::Vector2f(mouse_pos.x, mouse_pos.y) );
+		pallete[currentTile].setPosition( app.convertCoords(mouse_pos) );
 		app.draw( pallete[currentTile] );
 		app.display();
 	}
