@@ -20,11 +20,42 @@ struct CollisionMesage {
 class BlockMap { 
   private:
     std::vector<sf::RectangleShape> _renderObjects;
-    int id;  
+
+    float _width; 
+    float _height; 
+    int   _id;  
+
+    /* This function returns the width of the map 
+     */ 
+    bool calcWidth(const sf::RectangleShape &r, const sf::RectangleShape & b) { 
+      // Get the resultant right coordinate and left coordinate
+      float big_x_pos = r.getPosition().x + _renderObjects[0].getGlobalBounds().width; 
+      float small_x_pos = r.getPosition().x; 
+
+      // Get the compared right and left coordinates 
+      float bx_pos = block.getGlobalBounds().left + b.getGlobalBounds().width; 
+      float sx_pos = b.getPosition().x; 
+
+      return big_x_pos - small_x_pos; 
+    }
+
+    const sf::RectangleShape getBounds(const sf::RectangleShape & initial_b,std::function<bool(const sf::RectangleShape &r, const sf::RectangleShape
+     & b)> f) const { 
+     sf::RectangleShape result = initial_b; 
+
+      for( auto & block : _renderObjects ) { 
+        if( f(result, block) ) { 
+          result = block;
+        }
+      }
+
+      return result; 
+    }
+
   public:
     BlockMap(float offset_x, float offset_y, int count, std::function<sf::Vector2f(int)> f) 
     {
-      id = 0; 
+      _id = 0; 
       for(int i=0; i<count; ++i) { 
         _renderObjects.push_back(sf::RectangleShape(sf::Vector2f(BLOCK_WIDTH_SIZE, BLOCK_HEIGHT_SIZE)));
         _renderObjects[i].setPosition(f(i)); 
@@ -44,13 +75,10 @@ class BlockMap {
           CollisionMesage message; 
           messages.push_back(message); 
           message.collision_bounds = block.getGlobalBounds();  
-          message.id = 0; 
+          message.id = _id; 
        }
       }
       return messages; 
-    }
-
-    void handleCollision(const CollisionMesage & message) { 
     }
 };
 
@@ -86,9 +114,6 @@ class Ball
       if(_ball.getGlobalBounds().intersects(collbox)) { 
         message.collision_bounds = _ball.getGlobalBounds(); 
         message.id = 1; 
-        
-        // handle collision here
-         
       }
 
       return message; 

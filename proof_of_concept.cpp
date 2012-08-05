@@ -76,8 +76,8 @@ class Paddle :public Controller {
   virtual int id() { return 0; }
   const sf::Sprite & getSprite() { return _sprite; }
   void setSprite(const sf::Sprite & sprite) { _sprite = sprite; }
-  virtual void inputHandle() { 
-    _sprite.move(controls::paddle_move(dt, _sprite.getGlobalBounds().x, 0, sf::mouse::)); 
+  virtual void inputHandl(int intput_ev) { 
+    _sprite.move(controls::paddle_move(dt, _sprite.getGlobalBounds().x, 0, )); 
   }
 }
 
