@@ -2,14 +2,17 @@ CXX     = g++
 config	= debug
 LDFLAGS = -lsfml-system -lsfml-graphics -lsfml-window -lsfml-audio
 
+BIN_DIR = bin
+BIN_NAME = sfml_app
+
 # Optimize if not in debug mode 
 ifeq ($(config), release) 
 	CFLAGS	= -c -Wall -std=gnu++11 -O2
-	OUTEXE  = bin/release/sfml-app
 else  
 	CFLAGS	= -c -Wall -std=gnu++11
-	OUTEXE  = bin/debug/sfml-app
 endif
+
+OUTEXE = $(BIN_DIR)/$(config)/$(BIN_NAME)
 
 SRCDIR  := src
 SRCEXT   = cpp
@@ -25,9 +28,11 @@ $(OBJDIR)/%.o: $(SOURCES)
 	$(CXX) $(CFLAGS) $< -o $@
 
 $(OBJDIR):
-	mkdir $(OBJDIR)
+	mkdir -p $(OBJDIR)
 
 $(OUTEXE): $(OBJFILES)
+	mkdir -p $(BIN_DIR)
+	mkdir -p $(BIN_DIR)/$(config)
 	$(CXX) $(LDFLAGS) $(OBJFILES) -o $@
 
 $(SYMLINK):
