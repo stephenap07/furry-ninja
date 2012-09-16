@@ -1,6 +1,6 @@
 CXX     = g++ 
 config	= debug
-LDFLAGS = -lsfml-system -lsfml-graphics -lsfml-window -lsfml-audio
+LDFLAGS = $(shell pkg-config --libs sfml-all)
 
 # Optimize if not in debug mode 
 ifeq ($(config), release) 
