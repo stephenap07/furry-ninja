@@ -1,6 +1,6 @@
 CXX     = g++ 
 config	= debug
-LDFLAGS = -lsfml-system -lsfml-graphics -lsfml-window -lsfml-audio
+LDFLAGS = $(shell pkg-config --libs sfml-all)
 
 # Optimize if not in debug mode 
 ifeq ($(config), release) 
@@ -21,7 +21,7 @@ OBJFILES = $(addprefix $(OBJDIR)/, $(notdir $(SOURCES:.cpp=.o)))
 
 all: $(OBJDIR) $(OUTEXE) $(SYMLINK)
 
-$(OBJDIR)/%.o: $(SOURCES)
+$(OBJDIR)/%.o: $(SOURCES) 
 	$(CXX) $(CFLAGS) $< -o $@
 
 $(OBJDIR):

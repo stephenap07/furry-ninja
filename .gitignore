@@ -12,6 +12,10 @@ obj/
 *.la
 *.a
 
+# Vim crap 
+*.swo
+*.swp
+
 # Binaries
 *sfml-app
 
