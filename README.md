@@ -13,7 +13,7 @@ The title doesn't necessarily mean anything, it's just a code-name.
 
 *	SFML2 http://www.sfml-dev.org/download.php#2.0-rc 
 *	GNU c++ compiler 
-*	GNU essential utilities
+*	build essential
 *	Make
 
 ##To build
