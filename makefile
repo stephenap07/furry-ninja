@@ -2,13 +2,14 @@ CXX     = g++
 config	= debug
 LDFLAGS = $(shell pkg-config --libs sfml-all)
 
+CFLAGS = -c -Wall -std=gnu++11 
+
+APP_NAME = sfml-app
+OUTEXE  = bin/$(config)/sfml-app
+
 # Optimize if not in debug mode 
 ifeq ($(config), release) 
-	CFLAGS	= -c -Wall -std=gnu++11 -O2
-	OUTEXE  = bin/release/sfml-app
-else  
-	CFLAGS	= -c -Wall -std=gnu++11
-	OUTEXE  = bin/debug/sfml-app
+	CFLAGS += -O2
 endif
 
 SRCDIR  := src
