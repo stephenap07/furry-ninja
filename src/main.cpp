@@ -9,8 +9,13 @@
 #include <vector>
 
 // My includes
-#include "../include/Constants.h"
-#include "../include/AnimationManager.h"
+#include "../include/Constants.hpp"
+#include "../include/AnimationManager.hpp"
+#include "../include/Entity.hpp"
+#include "../include/Player.hpp"
+#include "../include/Items.hpp"
+#include "../include/Enemy.hpp"
+#include "../include/Collision.hpp"
 
 //Textures
 sf::Texture tileset;        
@@ -22,7 +27,6 @@ sf::Image   icon;
 sf::Sprite background;
 sf::Sprite trees;
 
-
 //sounds
 sf::SoundBuffer soundJump;
 sf::SoundBuffer soundPickUp;
@@ -32,399 +36,9 @@ sf::Sound PickUpSound;
 
 sf::RenderWindow app;
 
-const int CLEAR_TILE = 16;
-int map[MAP_HEIGHT][MAP_WIDTH] = 
-{ { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 0 , 0 , 0 , 0 , 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, },
-  { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , }
-};  
-
-int collisionMap[MAP_HEIGHT][MAP_WIDTH];
-
 //pallete of tiles available
 sf::Sprite pallete[PALLETE_MAX]; 
 int numTiles; 
-
-class Entity { 
-  public:
-    virtual void think(float dt) {}; 
-    virtual void contact(const Entity &other) {}; 
-    virtual void action(const Entity &other) {};
-};
-
-class DrawableEntity : public Entity{ 
-  public:
-    sf::Sprite sprite; 
-};
-
-class Player : public DrawableEntity
-{
-
-private:
-
-	//animations indexes
-  enum { ANIM_RIGHT=0, ANIM_LEFT, ANIM_IDLE };
-
-  int _current_direction; 
-
-  AnimationManager _anim_mgr; 
-
-  // private attributes
-	int _jumpPosition;
-	bool _jumpKey;
-	int jumpSpeed;;
-	bool _lockJump; 
-
-	//sounds
-	sf::Sound m_soundJump;
-	sf::Sound m_soundPickUp;
-
-private:
-
-	void UpdateAnimations(float dt)
-	{
-		if(_current_direction == ANIM_RIGHT) {
-			sprite.setTextureRect(_anim_mgr.play(ANIM_RIGHT,dt));
-		}
-		else if(_current_direction == ANIM_LEFT) {
-			sprite.setTextureRect(_anim_mgr.play(ANIM_LEFT,dt));
-		}
-    else if(_current_direction == ANIM_IDLE) { 
-      if(_anim_mgr.getAnim() == ANIM_RIGHT) { 
-        sprite.setTextureRect(_anim_mgr.getFrame(0)); 
-      }
-      else {
-        sprite.setTextureRect(_anim_mgr.getFrame(2)); 
-      }
-    }
-	}
-
-	void Jump()
-	{
-		velY = -jumpSpeed;
-	}
-
-public:
-	//public variables
-	sf::Sprite sprite;
-	float nextthink;
-	float velX;
-	float velY;
-	bool grounded;
-	bool physicsObject;
-
-	bool inuse;
-
-	//functions
-	
-	Player() :
-  _current_direction(ANIM_RIGHT), 
-  _lockJump(false), 
-  velX(0), 
-  velY(0),
-  nextthink(0.01f), 
-  jumpSpeed(5), 
-  _jumpPosition(0), 
-  _jumpKey(false),
-  physicsObject(true), 
-  inuse(false)	
-  {
-		//set the texture
-		sprite.setTexture(tileset);
-
-		//set up animation frames
-		_anim_mgr.pushAnim( Animation( {  frame_t(0, 65, PLAYER_WIDTH, PLAYER_HEIGHT), 
-                                      frame_t(PLAYER_WIDTH, 65, PLAYER_WIDTH, PLAYER_HEIGHT),
-                                      frame_t(PLAYER_WIDTH*2, 65, PLAYER_WIDTH, PLAYER_HEIGHT)
-                                   }, 0.075f )
-                      );
-
-		_anim_mgr.pushAnim( Animation( {  frame_t(0, 91, PLAYER_WIDTH, PLAYER_HEIGHT),
-                                      frame_t(PLAYER_WIDTH, 91, PLAYER_WIDTH, PLAYER_HEIGHT),
-                                      frame_t(PLAYER_WIDTH*2, 91, PLAYER_WIDTH, PLAYER_HEIGHT)
-                                   }, 0.075 )
-                      );
-
-		//set the current animations and current frame
-    sprite.setTextureRect(_anim_mgr.play(ANIM_RIGHT,0.0f)); 
-
-		//set up sounds
-		m_soundJump.setBuffer(soundJump);
-		m_soundPickUp.setBuffer(soundPickUp);	
-	}
-
-	virtual void think(float dt)
-	{
-
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-			velX = 220;
-		} 
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-			velX = -220;
-		}else velX = 0;
-
-		if( sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && _lockJump == false && grounded ) {
-			_lockJump = true;
-			m_soundJump.play();
-		}
-
-		if(_lockJump) { //if we pressed the jump button
-			Jump();
-			_lockJump = false;
-		}
-
-    if(velX > 0) {
-      _current_direction = ANIM_RIGHT; 
-    }
-    else if(velX < 0) {
-      _current_direction = ANIM_LEFT; 
-		}
-    else { 
-      _current_direction = ANIM_IDLE; 
-    }
-
-		UpdateAnimations(dt);
-
-	}
-
-};
-
-class ItemBacon : public DrawableEntity
-{
-
-private:
-
-	float m_impulse;
-	float m_limit;
-	float m_rate;
-	bool m_change;
-
-public:
-
-	bool inuse;
-
-	ItemBacon() :m_limit(0.5f), m_impulse(m_limit), m_rate(2.0f), m_change(false), inuse(false)
-	{
-		sprite.setTexture(tileset);
-    sprite.setTextureRect(sf::IntRect(140,58,11,10));
-	}
-
-	void think(float dt)
-	{
-		sprite.move( 0, m_impulse);
-
-		if(m_impulse >= m_limit) {
-			m_change = false;
-		}
-		else if(m_impulse <= -m_limit) {
-			m_change = true;
-		}
-		
-		if(!m_change) {
-			m_impulse -= m_rate*dt;
-		}
-		else if(m_change) {
-			m_impulse += m_rate*dt;
-		}
-	}
-
-};
-
-class Enemy 
-{
-
-public:
-
-	sf::Sprite sprite;
-	bool inuse;
-
-	int velX;
-	int velY;
-
-	Enemy () :velX(2), velY(0)
-	{
-		sprite.setTexture(tileset);
-    sprite.setTextureRect(sf::IntRect(153,58,11,10));
-	}
-
-	void think(float dt)
-	{
-		static float inc = 0.0f;
-
-		inc += 1*dt;
-
-		if( inc >= 2*PI) inc = 0.0f;
-
-		sprite.move( std::sin(inc*velX), 0);
-	}
-
-};
-
-
-/*==================================
-
-				UI
-
-  ================================*/
-
-/*==================================
-
-		Checking Collisions
-
-  ================================*/
-
-inline bool Collision_Horz_Down(int x, int y, int width, int & tileY)
-{
-	int tilePixels = x - (x % TILE_SIZE);
-	int testEnd = x + width;
-
-	tileY = y/TILE_SIZE;
-
-	int tileX = tilePixels/TILE_SIZE;
-
-	while( tilePixels <= testEnd) {
-		if( map[tileY][tileX] < CLEAR_TILE )
-			return true;
-
-		tileX++;
-		tilePixels += TILE_SIZE;
-	}
-
-	return false;
-}
-
-inline bool Collision_Horz_Up(int x, int y, int width, int & tileY)
-{
-	int tilePixels = x-(x % TILE_SIZE);
-	int testEnd = x + width;
-
-	tileY = y/TILE_SIZE;
-
-	int tileX = tilePixels/TILE_SIZE;
-
-	while( tilePixels <= testEnd) {
-		if( map[tileY][tileX] < CLEAR_TILE )
-			return true;
-
-		tileX++;
-		tilePixels += TILE_SIZE;
-	}
-
-	return false;
-}
-
-inline bool Collision_Ver(int x, int y, int height, int & tileX)
-{
-	int tilePixels = y - ( y % TILE_SIZE );
-	int testEnd = y + height;
-
-	tileX = x/TILE_SIZE;
-
-	int tileY = tilePixels/TILE_SIZE;
-
-	while( tilePixels < testEnd) {
-		if(map[tileY][tileX] < CLEAR_TILE)
-			return true;
-
-		tileY++;
-		tilePixels += TILE_SIZE;
-	}
-
-	return false;
-}
-
-inline bool RectCollision(const sf::Sprite & a, const sf::Sprite & b)
-{
-	sf::IntRect ar = a.getTextureRect();
-	sf::IntRect br = b.getTextureRect();
-
-	if( a.getPosition().x + ar.width < b.getPosition().x  ||
-		a.getPosition().x > b.getPosition().x + br.width  ||
-		a.getPosition().y + ar.height < b.getPosition().y ||
-		a.getPosition().y > b.getPosition().y + br.height )
-		return false;
-
-	return true;
-}
-
-inline void Gravity(float dt, float &velY)
-{
-	velY += GRAVITY*dt; 
-}
-
-void PhysicsDos( float dt, Player* ply )
-{
-	int tileCoord;
-
-	//X AXIS
-
-  float x = ply->sprite.getPosition().x;
-  float y = ply->sprite.getPosition().y; 
-  int width = ply->sprite.getTextureRect().height; 
-  int height = ply->sprite.getTextureRect().height; 
-  float velX = ply->velX; 
-
-	if( ply->velX > 0 ) { //moving right
-
-		if( Collision_Ver(x + width + velX*dt, y, height, tileCoord ) ) {
-			ply->sprite.setPosition( sf::Vector2f(tileCoord*TILE_SIZE - width, y) );
-		}
-		else
-			ply->sprite.move( sf::Vector2f(ply->velX*dt, 0) );
-	}
-
-	else if( ply->velX < 0) { //moving left
-
-		if( Collision_Ver( ply->sprite.getPosition().x + ply->velX*dt, ply->sprite.getPosition().y, ply->sprite.getTextureRect().height, tileCoord ) ) { //collision on the left side
-		  ply->sprite.setPosition( sf::Vector2f((tileCoord + 1)*TILE_SIZE, ply->sprite.getPosition().y) );	//move to the edge of the tile
-		}
-		else 
-      ply->sprite.move( sf::Vector2f(ply->velX*dt, 0) ); 
-	}
-
-	//Y AXIS
-
-	if( ply->velY < 0) { //moving up
-
-		ply->grounded = false;
-    ply->sprite.move( 0, ply->velY );
-    Gravity(dt, ply->velY);
-
-		if( Collision_Horz_Up(ply->sprite.getPosition().x, ply->sprite.getPosition().y + ply->velY*dt, ply->sprite.getTextureRect().width, tileCoord ) ) {
-			ply->sprite.setPosition( sf::Vector2f(ply->sprite.getPosition().x, ( tileCoord + 1 ) * TILE_SIZE) );
-			ply->sprite.move( sf::Vector2f(ply->velX*dt,0) );
-			ply->velY = 0;
-		}
-	}
-
-	else { //moving down / on the ground
-    ply->sprite.move( 0, ply->velY );
-    Gravity(dt, ply->velY);
-    ply->grounded = false;
-
-    if(ply->velY >= TILE_SIZE)
-      ply->velY = TILE_SIZE;
-
-		if( Collision_Horz_Down( ply->sprite.getPosition().x, ply->sprite.getPosition().y + ply->sprite.getTextureRect().height + ply->velY*dt, ply->sprite.getTextureRect().width, tileCoord ) ) { //on the ground
-			ply->sprite.setPosition( sf::Vector2f(ply->sprite.getPosition().x, tileCoord * TILE_SIZE - height) );
-			ply->velY = 0;
-			ply->grounded = true;
-		}
-	}
-
-}
 
 /*=================================
 	
@@ -562,10 +176,12 @@ int main()
 
   sf::Clock clock; 
 
-	Player ply; 
-	Enemy enemy;
+	Player ply(tileset, soundJump, soundPickUp); 
+	Enemy enemy(tileset);
 	enemy.sprite.setPosition(sf::Vector2f(8*TILE_SIZE, 13*TILE_SIZE));
-	ItemBacon bacon[MAX_BACON];
+
+	std::vector<ItemBacon> bacon(MAX_BACON, ItemBacon(tileset));
+
 	bacon[0].inuse = true;
 	bacon[0].sprite.setPosition(sf::Vector2f(16*TILE_SIZE, 13*TILE_SIZE));
 	int numBacons = 0; 

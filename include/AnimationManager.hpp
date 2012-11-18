@@ -1,6 +1,8 @@
 #ifndef ANIMATION_MANAGER_H_
 #define ANIMATION_MANAGE_H_
 
+#include <iostream>
+
 // Animation Typedefs 
 typedef sf::IntRect frame_t; 
 typedef std::vector<frame_t> animation_t; 
@@ -45,7 +47,7 @@ struct Animation {
         return _anim[index]; 
       }
       else { 
-        std::cout << "Programmer error\n"; 
+        std::cerr << "Programmer error\n"; 
       }
     }
 
@@ -68,7 +70,7 @@ class AnimationManager {
         return _animations[_current_anim].getNextFrame(dt); 
       }
       else { 
-        std::cout << "programmer error\n"; 
+        std::cerr << "Programmer error\n"; 
       }
     }
  public: 

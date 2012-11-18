@@ -12,6 +12,8 @@ const int TILE_SIZE = 32;
 const int MAP_WIDTH = WINDOW_WIDTH/TILE_WIDTH;
 const int MAP_HEIGHT = WINDOW_HEIGHT/TILE_HEIGHT;
 
+const int CLEAR_TILE = 16;
+
 const int TILE_TOTAL = 32;
 
 const int PI = 3.14159; 
