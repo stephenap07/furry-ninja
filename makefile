@@ -1,5 +1,5 @@
-CXX     = g++ 
 config	= debug
+CXX     = g++ 
 LDFLAGS = $(shell pkg-config --libs sfml-all)
 
 CFLAGS = -c -Wall -std=gnu++11 
@@ -7,7 +7,7 @@ CFLAGS = -c -Wall -std=gnu++11
 APP_NAME = sfml-app
 OUTEXE  = bin/$(config)/sfml-app
 
-# Optimize if not in debug mode 
+# Add optimize flag if a release config
 ifeq ($(config), release) 
 	CFLAGS += -O2
 endif

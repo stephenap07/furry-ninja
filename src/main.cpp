@@ -8,7 +8,7 @@
 #include <cassert>
 #include <vector>
 
-// My indludes
+// My includes
 #include "../include/Constants.h"
 #include "../include/AnimationManager.h"
 
