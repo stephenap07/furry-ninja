@@ -1,5 +1,5 @@
 #ifndef ANIMATION_MANAGER_H_
-#define ANIMATION_MANAGE_H_
+#define ANIMATION_MANAGER_H_
 
 #include <iostream>
 
