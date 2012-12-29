@@ -69,13 +69,11 @@ class Player : public DrawableEntity
 private:
 
   PlayerModel player_model; 
-  int _current_direction; 
+  int current_direction; 
 
   // private attributes
-	int _jumpPosition;
-	bool _jumpKey;
 	int jumpSpeed;;
-	bool _lockJump; 
+	bool lock_jump; 
 
 	//sounds
 	sf::Sound m_soundJump;
@@ -91,27 +89,21 @@ private:
 public:
 	//public variables
 	sf::Sprite sprite;
-	float nextthink;
 	float velX;
 	float velY;
 	bool grounded;
-	bool physicsObject;
 
 	bool inuse;
 
 	//functions
 	
 	Player(sf::Texture & tileset, sf::SoundBuffer & jump, sf::SoundBuffer &pickup) :
-  _current_direction(PlayerModel::ANIM_RIGHT), 
-  _lockJump(false), 
-  velX(0), 
-  velY(0),
-  nextthink(0.01f), 
-  jumpSpeed(5), 
-  _jumpPosition(0), 
-  _jumpKey(false),
-  physicsObject(true), 
-  inuse(false)	
+        current_direction(PlayerModel::ANIM_RIGHT), 
+        lock_jump(false), 
+        velX(0), 
+        velY(0),
+        jumpSpeed(5), 
+        inuse(false)	
   {
 		//set the texture
 		sprite.setTexture(tileset);
@@ -134,27 +126,27 @@ public:
 			velX = -220;
 		}else velX = 0;
 
-		if( sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && _lockJump == false && grounded ) {
-			_lockJump = true;
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && lock_jump == false && grounded ) {
+			lock_jump = true;
 			m_soundJump.play();
 		}
 
-		if(_lockJump) { //if we pressed the jump button
+		if(lock_jump) { //if we pressed the jump button
 			Jump();
-			_lockJump = false;
+			lock_jump = false;
 		}
 
     if(velX > 0) {
-      _current_direction = PlayerModel::ANIM_RIGHT; 
+      current_direction = PlayerModel::ANIM_RIGHT; 
     }
     else if(velX < 0) {
-      _current_direction = PlayerModel::ANIM_LEFT; 
+      current_direction = PlayerModel::ANIM_LEFT; 
 		}
     else { 
-      _current_direction = PlayerModel::ANIM_IDLE; 
+      current_direction = PlayerModel::ANIM_IDLE; 
     }
 
-    player_model.UpdateAnimations(_current_direction, dt);
+    player_model.UpdateAnimations(current_direction, dt);
 	}
 
 };

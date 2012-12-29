@@ -81,7 +81,7 @@ inline void Parallax(sf::Sprite & p, int iposx, const sf::View & view, float dis
 
 void LocaltoWorld(int &lx, int &ly) {
 
-	sf::Vector2f final = app.convertCoords(sf::Vector2i(lx, ly));
+	sf::Vector2f final = app.mapPixelToCoords(sf::Vector2i(lx, ly));
 
 	lx = final.x;
 	ly = final.y;
@@ -184,6 +184,7 @@ int main()
 
 	bacon[0].inuse = true;
 	bacon[0].sprite.setPosition(sf::Vector2f(16*TILE_SIZE, 13*TILE_SIZE));
+
 	int numBacons = 0; 
 
 	int currentTile = 0;
@@ -282,7 +283,7 @@ int main()
 		app.draw(ply.sprite);
 
 		sf::Vector2i mouse_pos = sf::Mouse::getPosition(app);
-		pallete[currentTile].setPosition( app.convertCoords(mouse_pos) );
+		pallete[currentTile].setPosition( app.mapPixelToCoords(mouse_pos) );
 		app.draw( pallete[currentTile] );
 		app.display();
 	}
